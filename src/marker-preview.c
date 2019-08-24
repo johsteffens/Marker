@@ -46,6 +46,10 @@
 struct _MarkerPreview
 {
   WebKitWebView parent_instance;
+
+  // jbs: current scroll state of document
+  gint32 scroll_state_x;
+  gint32 scroll_state_y;
 };
 
 G_DEFINE_TYPE(MarkerPreview, marker_preview, WEBKIT_TYPE_WEB_VIEW)
@@ -177,6 +181,49 @@ key_press_event_cb (GtkWidget *widget,
   return FALSE;
 }
 
+// jbs: We update scroll state on key actions that potentially changed view-scroll.
+gboolean
+key_release_event_cb (GtkWidget *widget,
+                      GdkEvent  *event,
+                      gpointer   user_data)
+{
+  g_return_val_if_fail (MARKER_IS_PREVIEW (widget), FALSE);
+  MarkerPreview *preview = MARKER_PREVIEW (widget);
+
+  GdkEventKey *key_event = (GdkEventKey *) event;
+
+  switch (key_event->keyval)
+  {
+    case GDK_KEY_j:
+    case GDK_KEY_k:
+    case GDK_KEY_h:
+    case GDK_KEY_l:
+    case GDK_KEY_g:
+    case GDK_KEY_G:
+    case GDK_KEY_Up:
+    case GDK_KEY_Down:
+    case GDK_KEY_Page_Up:
+    case GDK_KEY_Page_Down:
+        marker_preview_update_scroll_state(preview);
+        break;
+  }
+
+  return FALSE;
+}
+
+// jbs: We update scroll state on mouse actions that potentially changed view-scroll.
+//      See also scroll_event_cb.
+gboolean
+button_release_event_cb (GtkWidget *widget,
+                         GdkEvent  *event,
+                         gpointer   user_data)
+{
+  g_return_val_if_fail (MARKER_IS_PREVIEW (widget), FALSE);
+  MarkerPreview *preview = MARKER_PREVIEW (widget);
+  marker_preview_update_scroll_state(preview);
+  return FALSE;
+}
+
 gboolean
 scroll_event_cb (GtkWidget *widget,
                  GdkEvent  *event,
@@ -201,6 +248,11 @@ scroll_event_cb (GtkWidget *widget,
       marker_preview_zoom_in (preview);
     }
   }
+  else
+  {
+    // jbs: Update scroll state (TODO: find a way to capture the state after event has been processed)
+    marker_preview_update_scroll_state(preview);
+  }
 
   return FALSE;
 }
@@ -211,7 +263,9 @@ load_changed_cb (WebKitWebView   *preview,
 {
   switch (event)
   {
+    // jbs: Is there an event better suited for flicker-free restoration?
     case WEBKIT_LOAD_STARTED:
+        marker_preview_restore_scroll_state(MARKER_PREVIEW(preview));
       break;
 
     case WEBKIT_LOAD_REDIRECTED:
@@ -270,6 +324,11 @@ marker_preview_init (MarkerPreview *preview)
 
   g_signal_connect (preview, "scroll-event", G_CALLBACK (scroll_event_cb), NULL);
   g_signal_connect (preview, "key-press-event", G_CALLBACK (key_press_event_cb), NULL);
+  g_signal_connect (preview, "key-release-event", G_CALLBACK (key_release_event_cb), NULL);
+  g_signal_connect (preview, "button-release-event", G_CALLBACK (button_release_event_cb), NULL);
+
+  preview->scroll_state_x = 0;
+  preview->scroll_state_y = 0;
 }
 
 static void
@@ -511,5 +570,52 @@ void
 marker_preview_scroll_to_bottom (MarkerPreview *preview)
 {
   const gchar *script = "window.scrollTo(0,document.body.scrollHeight);";
+  webkit_web_view_run_javascript (WEBKIT_WEB_VIEW (preview), script, NULL, scroll_js_finished_cb, NULL);
+}
+
+/// jbs: new functions ...
+
+static void
+get_scroll_value_js_finished_cb (GObject      *object,
+                                 GAsyncResult *result,
+                                 gpointer      user_data)
+{
+  WebKitJavascriptResult *js_result;
+  GError *error = NULL;
+
+  js_result = webkit_web_view_run_javascript_finish (WEBKIT_WEB_VIEW (object), result, &error);
+  if (error != NULL) {
+    g_print ("Error running test_scroll_position script: %s", error->message);
+    g_error_free (error);
+    return;
+  }
+
+  JSCValue *value = webkit_javascript_result_get_js_value (js_result);
+  if( jsc_value_is_number( value ) )
+  {
+      *( gint32* )user_data = jsc_value_to_int32 ( value );
+  }
+  else
+  {
+      g_warning ( "Error running javascript: unexpected return value" );
+  }
+
+  webkit_javascript_result_unref (js_result);
+}
+
+void
+marker_preview_update_scroll_state(MarkerPreview* preview)
+{
+    // jbs: Is page?Offset the optimal variable to query for the purpose?
+    webkit_web_view_run_javascript (WEBKIT_WEB_VIEW (preview), "window.pageXOffset;",
+                                    NULL, get_scroll_value_js_finished_cb, &preview->scroll_state_x);
+    webkit_web_view_run_javascript (WEBKIT_WEB_VIEW (preview), "window.pageYOffset;",
+                                    NULL, get_scroll_value_js_finished_cb, &preview->scroll_state_y);
+}
+
+void
+marker_preview_restore_scroll_state(MarkerPreview *preview)
+{
+  g_autofree gchar *script = g_strdup_printf (SCROLL_SCRIPT, preview->scroll_state_x, preview->scroll_state_y);
   webkit_web_view_run_javascript (WEBKIT_WEB_VIEW (preview), script, NULL, scroll_js_finished_cb, NULL);
 }

@@ -1,3 +1,40 @@
+----------------------------
+
+## About this Fork
+
+This fork contains a workaround for [issue#191](https://github.com/fabiocolacio/Marker/issues/191):
+*_Preview scrolls to the top when changing the document._*
+
+### Probable reason
+
+With version 2.22 WebKit
+[deprecated a series of functions](https://webkitgtk.org/reference/webkitdomgtk/stable/WebKitDOMElement.html#webkit-dom-element-get-scroll-top)
+used by Marker in its scroll-extension.
+It seems that some of those functions, though still with warning compilable, appear to no longer work reliably
+on some systems. E.g.: I found that [webkit_dom_element_get_scroll_top](https://webkitgtk.org/reference/webkitdomgtk/stable/WebKitDOMElement.html#webkit-dom-element-get-scroll-top)
+always returns zero even when the view's scroll state is definitely non-zero.
+
+### Workaround
+
+I disabled `scroll-extension` and implemented the essential part of scroll capturing and restoration in `marker-preview`.
+
+This seems to work fine. (I used it to edited this text.)
+
+### Next Steps
+
+I'm no expert for WebKit. I placed a few comments at code-changes I'm unsure about.
+Feedback is welcome.
+
+If this workaround is feasible and compatible with the philosophy of Marker, it should probably be merged back
+into the [main codeline](https://github.com/fabiocolacio/Marker).
+
+**Fabio/Marker-Team: If you could let me know. & Thanks for creating this great tool!**
+
+Johannes
+
+----------------------------
+
+
 # <img width="30" src="data/com.github.fabiocolacio.marker.svg"/>Marker
 
 Marker is a markdown editor for linux made with Gtk+-3.0

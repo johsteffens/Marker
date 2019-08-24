@@ -17,6 +17,8 @@
  * License along with Marker; see the file LICENSE.md. If not,
  * see <http://www.gnu.org/licenses/>.
  *
+ * Changes by johsteffens (08/2019):  (Look for comments prefixed 'jbs:')
+ *   * Added variables and functions for scroll state capturing and restoring.
  */
 
 #ifndef __MARKER_PREVIEW_H__
@@ -55,6 +57,10 @@ void                 marker_preview_scroll_up                    (MarkerPreview 
 void                 marker_preview_scroll_down                  (MarkerPreview      *preview);
 void                 marker_preview_scroll_to_top                (MarkerPreview      *preview);
 void                 marker_preview_scroll_to_bottom             (MarkerPreview      *preview);
+
+// jbs: new functions
+void                 marker_preview_update_scroll_state          (MarkerPreview      *preview );
+void                 marker_preview_restore_scroll_state         (MarkerPreview      *preview );
 
 G_END_DECLS
 

@@ -124,7 +124,10 @@ page_created_cb (WebKitWebExtension *extension,
 G_MODULE_EXPORT void
 webkit_web_extension_initialize (WebKitWebExtension *extension)
 {
+    // jbs: disabled extension by cutting callback
+/*
   g_signal_connect (extension, "page-created",
                     G_CALLBACK (page_created_cb),
                     NULL);
+*/
 }
