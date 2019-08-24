@@ -18,7 +18,7 @@ always returns zero even when the view's scroll state is definitely non-zero.
 
 I disabled `scroll-extension` and implemented the essential part of scroll capturing and restoration in `marker-preview`.
 
-This seems to work fine. (I used it to edited this text.)
+This seems to work fine. (I used it to edit this text.)
 
 ### Next Steps
 
