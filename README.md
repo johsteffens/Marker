@@ -28,8 +28,6 @@ Feedback is welcome.
 If this workaround is feasible and compatible with the philosophy of Marker, it should probably be merged back
 into the [main codeline](https://github.com/fabiocolacio/Marker).
 
-**Fabio/Marker-Team: If you could let me know. & Thanks for creating this great tool!**
-
 Johannes
 
 ----------------------------
