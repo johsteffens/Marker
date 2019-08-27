@@ -1,6 +1,6 @@
 ----------------------------
 
-## Preamble (about this Fork)
+## Preamble (About this Fork)
 
 This fork contains a workaround for [issue#191](https://github.com/fabiocolacio/Marker/issues/191):
 *_Preview scrolls to the top when changing the document._*
@@ -12,8 +12,7 @@ E.g.: I found that [webkit_dom_element_get_scroll_top](https://webkitgtk.org/ref
 always returns zero even when the view's scroll state is definitely non-zero.
 
 WebKit deprecated these (and other) functions since version 2.22 with a hint to use the JavaScriptCore API instead.
-Whether the deprecation is a consequence of inconsistent system support, or the other way round, is hard to 
-tell. Going forward it is probably best not to use them anymore and redesign the code accordingly.
+Going forward it is probably best not to use them anymore.
 
 ### This Workaround
 
@@ -22,17 +21,17 @@ tell. Going forward it is probably best not to use them anymore and redesign the
 
 This fixes the problem of scrolling to the top. 
 
-I did not (yet) implement the `vertical_lock` feature but it should be easy to add.
+I did not (yet) implement the `vertical_lock` feature.
 
 ### Next Steps
 
-Comments at code-changes contain a few questions where I'm not quite sure about system independence, timing and concurrency.
-Feedback by a webkit expert is welcome.
+My comments at code-changes contain a few questions where I'm not quite sure about system independence, timing or concurrency.
+Feedback by a webkit expert would be helpful.
 
 If this workaround is feasible and compatible with the philosophy of Marker, it should probably be merged back
 into the [main codeline](https://github.com/fabiocolacio/Marker).
 
-Johannes
+<sub> Johannes </sub> 
 
 ----------------------------
 
