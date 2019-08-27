@@ -1,34 +1,36 @@
 ----------------------------
 
-## About this Fork
+## Preamble (about this Fork)
 
 This fork contains a workaround for [issue#191](https://github.com/fabiocolacio/Marker/issues/191):
 *_Preview scrolls to the top when changing the document._*
 
-### Probable reason
+### Probable Cause
 
-With version 2.22 WebKit
-[deprecated a series of functions](https://webkitgtk.org/reference/webkitdomgtk/stable/WebKitDOMElement.html#webkit-dom-element-get-scroll-top)
-used by Marker in its scroll-extension.
-It seems that some of those functions, though still with warning compilable, appear to no longer work reliably
-on some systems. E.g.: I found that [webkit_dom_element_get_scroll_top](https://webkitgtk.org/reference/webkitdomgtk/stable/WebKitDOMElement.html#webkit-dom-element-get-scroll-top)
+Certain webkit_dom - functions, used in Marker's scroll-extension, appear not to work reliably on some systems. 
+E.g.: I found that [webkit_dom_element_get_scroll_top](https://webkitgtk.org/reference/webkitdomgtk/stable/WebKitDOMElement.html#webkit-dom-element-get-scroll-top)
 always returns zero even when the view's scroll state is definitely non-zero.
 
-### Workaround
+WebKit deprecated these (and other) functions since version 2.22 with a hint to use the JavaScriptCore API instead.
+Whether the deprecation is a consequence of inconsistent system support, or the other way round, is hard to 
+tell. Going forward it is probably best not to use them anymore and redesign the code accordingly.
 
-I disabled `scroll-extension` and implemented the essential part of scroll capturing and restoration in `marker-preview`.
+### This Workaround
 
-This seems to work fine. (I used it to edited this text.)
+   * Implemented scroll capturing and restoration directly in `marker-preview` running JavaScript snippets.
+   * Disabled scroll-extension
+
+This fixes the problem of scrolling to the top. 
+
+I did not (yet) implement the `vertical_lock` feature but it should be easy to add.
 
 ### Next Steps
 
-I'm no expert for WebKit. I placed a few comments at code-changes I'm unsure about.
-Feedback is welcome.
+Comments at code-changes contain a few questions where I'm not quite sure about system independence, timing and concurrency.
+Feedback by a webkit expert is welcome.
 
 If this workaround is feasible and compatible with the philosophy of Marker, it should probably be merged back
 into the [main codeline](https://github.com/fabiocolacio/Marker).
-
-**Fabio/Marker-Team: If you could let me know. & Thanks for creating this great tool!**
 
 Johannes
 
