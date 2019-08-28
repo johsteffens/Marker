@@ -5,33 +5,24 @@
 This fork contains a workaround for [issue#191](https://github.com/fabiocolacio/Marker/issues/191):
 *_Preview scrolls to the top when changing the document._*
 
-### Probable Cause
+### Cause of the Problem
 
-Certain webkit_dom - functions, used in Marker's scroll-extension, appear not to work reliably on some systems. 
-E.g.: I found that [webkit_dom_element_get_scroll_top](https://webkitgtk.org/reference/webkitdomgtk/stable/WebKitDOMElement.html#webkit-dom-element-get-scroll-top)
-always returns zero even when the view's scroll state is definitely non-zero.
+   * [webkit_dom_element_get_scroll_top](https://webkitgtk.org/reference/webkitdomgtk/stable/WebKitDOMElement.html#webkit-dom-element-get-scroll-top)
+returns zero even when the view's scroll state is definitely non-zero.
+   * WebKit deprecated this and other functions since version 2.22 (with a hint to use the JavaScriptCore API instead).
+   Affected are webkit_dom - functions, used in the [scroll-extension](https://github.com/johsteffens/Marker/blob/master/src/webkit-extension/scroll-extension.c). It still compiles & links but with warnings.
 
-WebKit deprecated these (and other) functions since version 2.22 with a hint to use the JavaScriptCore API instead.
-Going forward it is probably best not to use them anymore.
-
-### This Workaround
+### How it is fixed
 
    * Implemented scroll capturing and restoration directly in `marker-preview` running JavaScript snippets.
-   * Disabled scroll-extension
-
-This fixes the problem of scrolling to the top. 
-
-I did not (yet) implement the `vertical_lock` feature.
+   * Disabled scroll-extension.
 
 ### Next Steps
 
-My comments at code-changes contain a few questions where I'm not quite sure about system independence, timing or concurrency.
-Feedback by a webkit expert would be helpful.
-
-If this workaround is feasible and compatible with the philosophy of Marker, it should probably be merged back
-into the [main codeline](https://github.com/fabiocolacio/Marker).
-
-<sub> Johannes </sub> 
+   * Implement the `vertical_lock` feature.
+   * Clarify a few points where I'm unsure about platform independence, timing and/or concurrency
+(see inline comments). <br>
+     Feedback by a WebKit-Expert would be helpful.
 
 ----------------------------
 
