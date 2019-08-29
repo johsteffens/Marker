@@ -10,7 +10,7 @@ This fork contains a workaround for [issue#191](https://github.com/fabiocolacio/
    * [webkit_dom_element_get_scroll_top](https://webkitgtk.org/reference/webkitdomgtk/stable/WebKitDOMElement.html#webkit-dom-element-get-scroll-top)
 returns zero even when the view's scroll state is definitely non-zero.
    * WebKit deprecated this and other functions since version 2.22 (with a hint to use the JavaScriptCore API instead).
-   Affected are webkit_dom - functions are used in the [scroll-extension](https://github.com/johsteffens/Marker/blob/master/src/webkit-extension/scroll-extension.c). It still compiles & links but with warnings.
+   Affected are webkit_dom - functions. They are used in the [scroll-extension](https://github.com/johsteffens/Marker/blob/master/src/webkit-extension/scroll-extension.c). It still compiles & links but with warnings.
 
 ### How it is fixed
 
