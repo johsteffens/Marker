@@ -17,12 +17,9 @@ returns zero even when the view's scroll state is definitely non-zero.
    * Implemented scroll capturing and restoration directly in `marker-preview` running JavaScript snippets.
    * Disabled scroll-extension.
 
-### Next Steps
+### Current Status
 
-   * Implement the `vertical_lock` feature.
-   * Clarify a few points where I'm unsure about platform independence, timing and/or concurrency
-(see inline comments). <br>
-     Feedback by a WebKit-Expert would be helpful.
+   * Meanwhile the [issue](https://github.com/fabiocolacio/Marker/issues/191) has been fixed in the [original repository](https://github.com/fabiocolacio) by a different and probably better approach. I'm keeping this workaround for my own reference (and for those who might be interested :-) ).
 
 ----------------------------
 
